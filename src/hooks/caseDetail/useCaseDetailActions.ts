@@ -311,7 +311,8 @@ export function useCaseDetailActions(caseData: any, onUpdate: any, onDelete: any
             userName: profile?.full_name || null,
         });
         if(onNotify){
-            let msg=`📅 <b>جلسة جديدة</b>\n\n`;
+            let msg=`📅 <b>جلسة جديدة</b>\n`;
+            msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
             msg+=`⚖️ <b>${escapeTelegramHtml(caseData.title||'—')}</b>\n`;
             msg+=`📋 رقم القيد: ${escapeTelegramHtml(caseData.number||'—')}\n`;
             msg+=`🏛 المحكمة: ${escapeTelegramHtml(caseData.court||'—')}\n`;
@@ -320,6 +321,8 @@ export function useCaseDetailActions(caseData: any, onUpdate: any, onDelete: any
             msg+=`\n`;
             if(sessionForm.location_floor||sessionForm.location_hall) msg+=`📍 ${sessionForm.location_floor?'الطابق '+escapeTelegramHtml(sessionForm.location_floor)+' ':''} ${sessionForm.location_hall?'قاعة '+escapeTelegramHtml(sessionForm.location_hall):''}\n`;
             if(sessionForm.description) msg+=`📝 ${escapeTelegramHtml(sessionForm.description)}\n`;
+            msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
+            msg+=`👤 بواسطة: ${escapeTelegramHtml(profile?.full_name || 'غير معروف')}`;
             onNotify(msg);
         }
         setSessionForm({date:'', time_period:'صباحي', location_floor:'', location_hall:'', description:'', result:'', next_action:''});
@@ -378,6 +381,7 @@ export function useCaseDetailActions(caseData: any, onUpdate: any, onDelete: any
     };
 
     const handleDeleteSession = async (sessionId) => {
+        const sessionToDelete = sessions.find((s: any) => s.id === sessionId);
         const { error } = await db.from('case_sessions').delete().eq('id', sessionId);
         if (error) { toast('❌ فشل حذف الجلسة، حاول مرة أخرى', true); return; }
         toast('🗑 تم حذف الجلسة');
@@ -387,6 +391,16 @@ export function useCaseDetailActions(caseData: any, onUpdate: any, onDelete: any
             client_name: client?.full_name || null,
             userName: profile?.full_name || null,
         });
+        if(onNotify){
+            let msg=`🗑 <b>تم حذف جلسة</b>\n`;
+            msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
+            msg+=`⚖️ <b>${escapeTelegramHtml(caseData.title||'—')}</b>\n`;
+            msg+=`📋 رقم القيد: ${escapeTelegramHtml(caseData.number||'—')}\n`;
+            if (sessionToDelete?.date) msg+=`📆 تاريخ الجلسة المحذوفة: ${escapeTelegramHtml(sessionToDelete.date)}\n`;
+            msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
+            msg+=`👤 بواسطة: ${escapeTelegramHtml(profile?.full_name || 'غير معروف')}`;
+            onNotify(msg);
+        }
         fetchSessions();
     };
 
@@ -411,15 +425,35 @@ export function useCaseDetailActions(caseData: any, onUpdate: any, onDelete: any
             userName: profile?.full_name || null,
         });
         if(onNotify){
+            // نبني قائمة بالتغييرات الفعلية (القديم → الجديد) بدل ما نعرض كل البيانات
+            const changes: string[] = [];
+            if (session?.date && form.date && session.date !== form.date) {
+                changes.push(`📆 <b>الجلسة:</b> من ${escapeTelegramHtml(session.date)} ← إلى ${escapeTelegramHtml(form.date)}`);
+            } else if (form.date) {
+                changes.push(`📆 <b>تاريخ الجلسة:</b> ${escapeTelegramHtml(form.date)}`);
+            }
+            if (session?.result !== form.result && form.result) {
+                changes.push(`✅ <b>النتيجة:</b> ${escapeTelegramHtml(form.result)}`);
+            }
+            if (session?.next_action !== form.next_action && form.next_action) {
+                changes.push(`➡️ <b>الإجراء التالي:</b> ${escapeTelegramHtml(form.next_action)}`);
+            }
+            if (session?.description !== form.description && form.description) {
+                changes.push(`📝 ${escapeTelegramHtml(form.description)}`);
+            }
+
             let msg=`✏️ <b>تم تعديل جلسة</b>\n`;
             msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
             msg+=`⚖️ <b>${escapeTelegramHtml(caseData.title||'—')}</b>\n`;
             msg+=`📋 رقم القيد: ${escapeTelegramHtml(caseData.number||'—')}\n`;
             msg+=`🏛 المحكمة: ${escapeTelegramHtml(caseData.court||'—')}\n`;
-            msg+=`📆 <b>التاريخ الجديد:</b> ${escapeTelegramHtml(form.date)}`;
-            if(form.time_period) msg+=` (${escapeTelegramHtml(form.time_period)})`;
-            msg+=`\n`;
-            if(form.description) msg+=`📝 ${escapeTelegramHtml(form.description)}\n`;
+            if (changes.length > 0) {
+                msg += changes.join('\n') + '\n';
+            } else {
+                msg+=`📆 <b>التاريخ:</b> ${escapeTelegramHtml(form.date)}\n`;
+            }
+            msg+=`━━━━━━━━━━━━━━━━━━━━\n`;
+            msg+=`👤 بواسطة: ${escapeTelegramHtml(profile?.full_name || 'غير معروف')}`;
             onNotify(msg);
         }
         fetchSessions();
