@@ -82,8 +82,6 @@ export function useClientActions(params: {
             if (form.national_id) clientMsg += `🪪 <b>الرقم القومي:</b> ${escapeTelegramHtml(form.national_id)}\n`;
             if (form.cr_number) clientMsg += `🏢 <b>السجل التجاري:</b> ${escapeTelegramHtml(form.cr_number)}\n`;
             if (form.notes) clientMsg += `📝 <b>ملاحظات:</b> ${escapeTelegramHtml(form.notes)}\n`;
-            clientMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-            clientMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
             sendTelegram(clientMsg);
             fetchClients(0, clientSearch);
         }
@@ -104,12 +102,6 @@ export function useClientActions(params: {
                 if (error) { toast('❌ فشل حذف الموكل — تحقق من الاتصال وأعد المحاولة', true); return; }
                 toast('🗑 تم حذف الموكل نهائياً');
                 logActivity(db, 'حذف موكل', { userName: _userName, entity_type: 'client', entity_id: clientId, details: cl?.full_name || null, client_name: cl?.full_name || null });
-                let delClientMsg = `🗑 <b>تم حذف موكل</b>\n`;
-                delClientMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                delClientMsg += `👤 <b>الاسم:</b> ${escapeTelegramHtml(cl?.full_name || '—')}\n`;
-                delClientMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                delClientMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
-                sendTelegram(delClientMsg);
                 setSelectedClient(null);
                 setClients((prev: any[]) => prev.filter((c: any) => c.id !== clientId));
             }
@@ -157,26 +149,6 @@ export function useClientActions(params: {
         if (!success) { toast('❌ فشل تعديل بيانات الموكل — تحقق من الاتصال وأعد المحاولة', true); return; }
         toast('✅ تم تحديث بيانات الموكل');
         logActivity(db, 'تعديل موكل', { userName: _userName, entity_type: 'client', entity_id: clientId, details: form.full_name || null, client_name: form.full_name || null });
-
-        // إشعار تليجرام - تعديل موكل، بنعرض بس الحقول اللي اتغيّرت فعلاً
-        const clientChanges: string[] = [];
-        if (client?.phone !== form.phone && form.phone) {
-            clientChanges.push(`📞 <b>الهاتف:</b> من ${escapeTelegramHtml(client?.phone || '—')} ← إلى ${escapeTelegramHtml(form.phone)}`);
-        }
-        if (client?.email !== form.email && form.email) {
-            clientChanges.push(`📧 <b>الإيميل:</b> من ${escapeTelegramHtml(client?.email || '—')} ← إلى ${escapeTelegramHtml(form.email)}`);
-        }
-        if (client?.address !== form.address && form.address) {
-            clientChanges.push(`📍 <b>العنوان:</b> ${escapeTelegramHtml(form.address)}`);
-        }
-        let updClientMsg = `✏️ <b>تم تعديل بيانات موكل</b>\n`;
-        updClientMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        updClientMsg += `👤 <b>الاسم:</b> ${escapeTelegramHtml(form.full_name)}\n`;
-        if (clientChanges.length > 0) updClientMsg += clientChanges.join('\n') + '\n';
-        updClientMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        updClientMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
-        sendTelegram(updClientMsg);
-
         fetchClients(0, clientSearch);
         nav.closeModal('clientDetail'); setSelectedClient(null);
     };
