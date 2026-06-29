@@ -80,7 +80,7 @@ export function useAdminOffice(tenantId: string | null, profile?: any) {
           return;
         }
         const ext = logoFile.name.split('.').pop();
-        const path = `office/logo.${ext}`;
+        const path = `office/${tenantId}/logo.${ext}`;
         const { error: upErr } = await db.storage.from('client-docs').upload(path, logoFile, { upsert: true });
         // ⚠️ BUG FIX: قبل كده لو الرفع فشل (upErr)، الكود كان يتجاهل الخطأ
         // تمامًا ويكمل الحفظ بقيمة logoUrl القديمة (غالبًا فاضية)، ويظهر
