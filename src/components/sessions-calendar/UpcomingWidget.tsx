@@ -76,7 +76,7 @@ function UpcomingWidget({ cases, clients, onOpenCase }: any) {
                     React.createElement('div', { className: "flex-1 p-3 space-y-1" },
                         React.createElement('div', { className: "flex items-start justify-between gap-2" },
                             React.createElement('p', { className: "text-[11px] font-black text-white leading-tight flex-1" },
-                                linkedCase?.title || '— قضية غير محددة —'),
+                                linkedCase?.title || s.title || s.description || '— جلسة مستقلة —'),
                             s.session_time && React.createElement('span', {
                                 className: "text-[8px] px-1.5 py-0.5 rounded-full font-black shrink-0",
                                 style: { background: s.session_time === 'صباحي' ? 'rgba(251,191,36,0.15)' : 'rgba(99,102,241,0.15)', color: s.session_time === 'صباحي' ? '#fbbf24' : '#818cf8' }
