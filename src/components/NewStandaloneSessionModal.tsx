@@ -78,11 +78,10 @@ function Field({ label, required = false, children }: { label: string; required?
 const inputCls = 'w-full p-3 text-xs rounded-xl border border-white/10 bg-premium-bg text-white placeholder-slate-600';
 const inputStyle = { fontFamily: 'Cairo,sans-serif' };
 
-export default function NewStandaloneSessionModal({ onClose, onSaved, onNotify, profile }: {
+export default function NewStandaloneSessionModal({ onClose, onSaved, onNotify }: {
     onClose: () => void;
     onSaved: () => void;
     onNotify?: (msg: string) => void;
-    profile?: any;
 }) {
     const [form, setForm] = useState<Form>(EMPTY);
     const [saving, setSaving] = useState(false);
@@ -135,8 +134,7 @@ export default function NewStandaloneSessionModal({ onClose, onSaved, onNotify, 
             // إشعار تيليجرام
             try {
                 if (onNotify) {
-                    let msg = `📅 <b>جلسة مستقلة جديدة</b>\n`;
-                    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+                    let msg = `📅 <b>جلسة مستقلة جديدة</b>\n\n`;
                     if (form.title)       msg += `⚖️ <b>${escapeTelegramHtml(form.title)}</b>\n`;
                     if (fullCaseNumber)   msg += `📋 رقم القضية: ${escapeTelegramHtml(fullCaseNumber)}\n`;
                     if (form.court)       msg += `🏛 المحكمة: ${escapeTelegramHtml(form.court)}\n`;
@@ -145,8 +143,6 @@ export default function NewStandaloneSessionModal({ onClose, onSaved, onNotify, 
                     if (form.plaintiff)   msg += `👤 الموكل: ${escapeTelegramHtml(form.plaintiff)}${form.plaintiff_role ? ' — ' + escapeTelegramHtml(form.plaintiff_role) : ''}\n`;
                     if (form.defendant)   msg += `👤 الخصم: ${escapeTelegramHtml(form.defendant)}${form.defendant_role ? ' — ' + escapeTelegramHtml(form.defendant_role) : ''}\n`;
                     if (form.next_action) msg += `⚡ الإجراء القادم: ${escapeTelegramHtml(form.next_action)}\n`;
-                    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                    msg += `👤 بواسطة: ${escapeTelegramHtml(profile?.full_name || 'غير معروف')}`;
                     onNotify(msg);
                 }
             } catch { /* تيليجرام اختياري */ }
