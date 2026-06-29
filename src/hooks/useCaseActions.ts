@@ -133,8 +133,6 @@ export function useCaseActions(params: {
             if (form.plaintiff) caseMsg += `🟢 <b>المدعي:</b> ${escapeTelegramHtml(form.plaintiff)}\n`;
             if (form.defendant) caseMsg += `🔴 <b>المدعى عليه:</b> ${escapeTelegramHtml(form.defendant)}\n`;
             if (form.date) caseMsg += `📆 <b>أقرب جلسة:</b> ${escapeTelegramHtml(form.date)}\n`;
-            caseMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-            caseMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
             sendTelegram(caseMsg);
             fetchCases(0, casesFilter);
         }
@@ -162,13 +160,6 @@ export function useCaseActions(params: {
                     case_type: c?.type || null,
                     client_name: clients.find((cl: any) => cl.id === c?.client_id)?.full_name || null,
                 });
-                let delMsg = `🗑 <b>تم حذف قضية</b>\n`;
-                delMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                delMsg += `📌 <b>الموضوع:</b> ${escapeTelegramHtml(c?.title || '—')}\n`;
-                delMsg += `📋 <b>رقم القيد:</b> ${escapeTelegramHtml(c?.number || '—')}\n`;
-                delMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                delMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
-                sendTelegram(delMsg);
                 setSelectedCase(null);
                 setCases((prev: any[]) => prev.filter((c: any) => c.id !== caseId));
             }
@@ -178,7 +169,6 @@ export function useCaseActions(params: {
     // ─ تعديل قضية ─
     const handleUpdateCase = async (caseId: any, form: any) => {
         try {
-            const oldCase = cases.find((c: any) => c.id === caseId);
             const payload = {
                 case_number_official: form.number || null,
                 title: form.title,
@@ -241,36 +231,15 @@ export function useCaseActions(params: {
                 // تحديث فوري للحالة المحلية — عشان الشاشة المفتوحة (CaseDetailView) تعرض القيم الجديدة فورًا
                 setCases((prev: any[]) => prev.map((c: any) => c.id === caseId ? { ...c, ...form } : c));
                 if (selectedCase?.id === caseId) setSelectedCase((p: any) => ({ ...p, ...form }));
-                // إشعار تليجرام - تعديل قضية، بنعرض بس الحقول اللي اتغيّرت فعلاً (قديم ← جديد)
-                const fieldChanges: string[] = [];
-                const oldDateVal = (oldCase?.date === '—' ? '' : oldCase?.date) || '';
-                if (form.date && form.date !== oldDateVal) {
-                    fieldChanges.push(`📆 <b>الجلسة:</b> من ${escapeTelegramHtml(oldDateVal || '—')} ← إلى ${escapeTelegramHtml(form.date)}`);
-                }
-                if (oldCase?.court && form.court && oldCase.court !== form.court) {
-                    fieldChanges.push(`🏛 <b>المحكمة:</b> من ${escapeTelegramHtml(oldCase.court)} ← إلى ${escapeTelegramHtml(form.court)}`);
-                }
-                if (oldCase?.status && form.status && oldCase.status !== form.status) {
-                    fieldChanges.push(`📊 <b>الحالة:</b> من ${escapeTelegramHtml(oldCase.status)} ← إلى ${escapeTelegramHtml(form.status)}`);
-                }
-                if (oldCase?.plaintiff !== form.plaintiff && form.plaintiff) {
-                    fieldChanges.push(`🟢 <b>المدعي:</b> ${escapeTelegramHtml(form.plaintiff)}`);
-                }
-                if (oldCase?.defendant !== form.defendant && form.defendant) {
-                    fieldChanges.push(`🔴 <b>المدعى عليه:</b> ${escapeTelegramHtml(form.defendant)}`);
-                }
-
+                // إشعار تليجرام - تعديل قضية
                 let updMsg = `✏️ <b>تم تعديل بيانات قضية</b>\n`;
                 updMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
                 updMsg += `📋 <b>رقم القيد:</b> ${escapeTelegramHtml(form.number || '—')}\n`;
                 updMsg += `📌 <b>الموضوع:</b> ${escapeTelegramHtml(form.title)}\n`;
-                if (fieldChanges.length > 0) {
-                    updMsg += fieldChanges.join('\n') + '\n';
-                } else {
-                    updMsg += `🏛 <b>المحكمة:</b> ${escapeTelegramHtml(form.court || '—')}\n`;
-                }
-                updMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                updMsg += `👤 بواسطة: ${escapeTelegramHtml(_userName || 'غير معروف')}`;
+                updMsg += `🏛 <b>المحكمة:</b> ${escapeTelegramHtml(form.court || '—')}\n`;
+                if (form.plaintiff) updMsg += `🟢 <b>المدعي:</b> ${escapeTelegramHtml(form.plaintiff)}\n`;
+                if (form.defendant) updMsg += `🔴 <b>المدعى عليه:</b> ${escapeTelegramHtml(form.defendant)}\n`;
+                if (form.date) updMsg += `📆 <b>الجلسة القادمة:</b> ${escapeTelegramHtml(form.date)}\n`;
                 sendTelegram(updMsg);
                 fetchCases(0, casesFilter);
             }
