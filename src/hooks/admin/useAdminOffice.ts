@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { toast, validateUploadFile, logActivity } from '../../utils';
 import { db } from '../../supabaseClient';
+import { invalidateOfficeCache } from '../../constants';
 
 export function useAdminOffice(tenantId: string | null, profile?: any) {
   const _userName = profile?.full_name || null;
@@ -126,6 +127,9 @@ export function useAdminOffice(tenantId: string | null, profile?: any) {
         ({ error: saveError } = await db.from('office_settings').insert({ ...payload, tenant_id: tenantId }));
       }
       if (saveError) throw saveError;
+      invalidateOfficeCache(); // ⚠️ مهم: من غير السطر ده، شعار الفاتورة في قسم
+      // الأتعاب وأي مكان تاني بيقرا عن طريق loadOfficeSetting() كان يفضل
+      // يشوف نسخة قديمة من الكاش لحد إعادة تحميل الصفحة بالكامل.
       setOfficeSettings(s => ({ ...s, logoUrl }));
       setLogoFile(null);
       toast('✅ تم حفظ إعدادات المكتب');
