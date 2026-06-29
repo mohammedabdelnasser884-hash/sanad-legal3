@@ -10,7 +10,7 @@ function SessionCard({ s, cases, clients, onOpenCase, onOpenStandalone }: any) {
     const plaintiff = linkedCase?.plaintiff || s.plaintiff;
     const defendant = linkedCase?.defendant || s.defendant;
     const caseType  = linkedCase?.type  || s.case_type || linkedCase?.case_type;
-    const caseTitle = linkedCase?.title || s.title;
+    const caseTitle = linkedCase?.title || s.title || s.description;
     const caseNumberRaw = linkedCase?.number || s.case_number;
 
     // فصل رقم الدعوى عن السنة (الصيغة المتوقعة: رقم/سنة)
@@ -31,7 +31,7 @@ function SessionCard({ s, cases, clients, onOpenCase, onOpenStandalone }: any) {
     const partiesFallback = !numberLine ? caseTitle : null;
     const partiesText = (plaintiff && defendant)
         ? plaintiff + ' ضد ' + defendant
-        : (plaintiff || defendant || partiesFallback || '— جلسة —');
+        : (plaintiff || defendant || partiesFallback || caseTitle || '— جلسة مستقلة —');
 
     // السطر الثالث: اسم/موضوع الدعوى (تعويض / طرد / ريع...)
     const titleLine = (caseTitle && caseTitle !== partiesText) ? caseTitle : null;
@@ -77,7 +77,7 @@ function SessionCard({ s, cases, clients, onOpenCase, onOpenStandalone }: any) {
 
         // سطر الأطراف
         React.createElement(PartiesLine, {
-            plaintiff, defendant, fallback: partiesFallback || '— جلسة —',
+            plaintiff, defendant, fallback: partiesFallback || caseTitle || '— جلسة مستقلة —',
             className: "text-[13px] font-bold text-white" + (numberLine ? " mt-0.5" : "")
         }),
 
