@@ -151,7 +151,7 @@ function UpcomingSessionsList({db, cases, clients, onOpenCase}){
                                 React.createElement('div',{className:"flex-1 p-3 space-y-1"},
                                     React.createElement('div',{className:"flex items-start justify-between gap-2"},
                                         React.createElement('p',{className:"text-[11px] font-black text-white leading-tight flex-1"},
-                                            linkedCase?.title||s.title||s.description||'— جلسة مستقلة —'
+                                            linkedCase?.title||s.title||(linkedCase?.plaintiff&&linkedCase?.defendant?linkedCase.plaintiff+' ضد '+linkedCase.defendant:null)||s.description||'— جلسة مستقلة —'
                                         ),
                                         isLatest
                                             ? React.createElement('span',{
