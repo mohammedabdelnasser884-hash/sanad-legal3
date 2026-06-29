@@ -3,7 +3,7 @@ import { toast, validateUploadFile } from '../utils';
 import { I, COUNTRY_CONFIGS } from '../constants';
 import { createPortal } from 'react-dom';
 import { db } from '../supabaseClient';
-import { loadOfficeSetting, saveOfficeSetting } from "../constants";
+import { loadOfficeSetting, saveOfficeSetting, getCurrentTenantId } from "../constants";
 import CountrySettings from './CountrySettings';
 
 function SettingsPage({profile, isAdmin, country, onCountryChange, onClose}){
@@ -87,7 +87,13 @@ function SettingsPage({profile, isAdmin, country, onCountryChange, onClose}){
           return;
         }
         const ext = logoFile.name.split('.').pop();
-        const path = `office/logo.${ext}`;
+        const tenantIdForPath = getCurrentTenantId();
+        if (!tenantIdForPath) {
+          toast('❌ تعذر تحديد المكتب الحالي، أعد تسجيل الدخول وحاول مرة أخرى', true);
+          setOfficeSaving(false);
+          return;
+        }
+        const path = `office/${tenantIdForPath}/logo.${ext}`;
         const { error: upErr } = await db.storage.from('client-docs').upload(path, logoFile, { upsert: true });
         if (upErr) throw upErr;
         const { data: urlData } = db.storage.from('client-docs').getPublicUrl(path);
