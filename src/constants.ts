@@ -279,6 +279,15 @@ async function saveOfficeSetting(key: string, value: string): Promise<void>{
   }
 }
 
+// ⚠️ بعض الأماكن (useAdminOffice.ts مثلاً) بتحفظ مباشرة على جدول
+// office_settings بدون المرور على saveOfficeSetting أعلاه — يعني
+// الكاش هنا يفضل قديم في الذاكرة وأي قراءة تالية (مثل شعار الفاتورة
+// في قسم الأتعاب) ترجّع بيانات قديمة لحد ما تتم إعادة تحميل الصفحة.
+// لازم تتنده هذه الدالة فورًا بعد أي حفظ مباشر زي ده.
+function invalidateOfficeCache(){
+  _officeCache = null;
+}
+
 // ══════════════════════════════════════════
 //  مكون إعدادات الدولة
 // ══════════════════════════════════════════
@@ -324,4 +333,4 @@ const SanadIcon = ({size=48}: {size?:number}) =>
       border:'1px solid rgba(212,175,55,0.18)',flexShrink:0}
   }, React.createElement(SanadMark, {size:size*0.68}));
 
-export { I, COUNTRY_CONFIGS, loadOfficeSetting, saveOfficeSetting, setCurrentTenantId, getCurrentTenantId, SanadMark, SanadLogo, SanadIcon };
+export { I, COUNTRY_CONFIGS, loadOfficeSetting, saveOfficeSetting, setCurrentTenantId, getCurrentTenantId, invalidateOfficeCache, SanadMark, SanadLogo, SanadIcon };
