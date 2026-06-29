@@ -224,6 +224,12 @@ function setCurrentTenantId(tenantId: string | null) {
   }
 }
 
+// ⚠️ يُستخدم في أماكن خارج هذا الملف (مثل رفع شعار المكتب على Storage)
+// محتاجة تعرف tenant_id الحالي عشان يبنوا مسار ملف خاص بكل مكتب.
+function getCurrentTenantId(): string | null {
+  return _currentTenantId;
+}
+
 // cache للصف كله عشان منعملش query لكل key — مفتاحه tenant_id الحالي
 let _officeCache: Record<string,any>|null = null;
 let _officeCacheTenantId: string | null = null;
@@ -318,4 +324,4 @@ const SanadIcon = ({size=48}: {size?:number}) =>
       border:'1px solid rgba(212,175,55,0.18)',flexShrink:0}
   }, React.createElement(SanadMark, {size:size*0.68}));
 
-export { I, COUNTRY_CONFIGS, loadOfficeSetting, saveOfficeSetting, setCurrentTenantId, SanadMark, SanadLogo, SanadIcon };
+export { I, COUNTRY_CONFIGS, loadOfficeSetting, saveOfficeSetting, setCurrentTenantId, getCurrentTenantId, SanadMark, SanadLogo, SanadIcon };
