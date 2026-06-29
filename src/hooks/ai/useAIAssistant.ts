@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { db } from '../../supabaseClient';
-import { loadOfficeSetting, COUNTRY_CONFIGS } from '../../constants';
+import { loadOfficeSetting, COUNTRY_CONFIGS, invalidateOfficeCache } from '../../constants';
 import { toast, escapeHtml } from '../../utils';
 
 // النماذج المتاحة — يجب أن تطابق ALLOWED_MODELS في edge function ai-chat
@@ -193,6 +193,9 @@ ${list}
             } else {
                 await db.from('office_settings').insert({ groq_key: k, tenant_id: tenantId });
             }
+            invalidateOfficeCache(); // نفس مشكلة شعار المكتب: كتابة مباشرة على الجدول
+            // لازم تمسح الكاش، وإلا أي شاشة تانية بتقرا عن طريق loadOfficeSetting()
+            // تفضل شايفة قيمة قديمة لحد ما تتعمل إعادة تحميل كاملة للصفحة.
             setHasKey(true);
             setShowKeyInput(false);
             toast('✅ تم حفظ API Key بأمان على السيرفر');
