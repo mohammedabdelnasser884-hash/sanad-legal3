@@ -46,7 +46,7 @@ function DashboardTab({
         const displayDefendant = linkedCase?.defendant || (isStandalone ? s.defendant : null);
         const displayTitle     = linkedCase?.title     || (isStandalone ? (s.title || s.case_number || null) : null);
         const displayCourt     = linkedCase?.court     || (isStandalone ? s.court : null);
-        const fallbackLabel    = displayTitle || (isStandalone ? '🗓 جلسة مستقلة' : '— قضية غير محددة —');
+        const fallbackLabel    = displayTitle || (isStandalone ? '🗓 جلسة مستقلة' : s.description || '— جلسة —');
 
         return React.createElement('div',{
             key:s.id,
