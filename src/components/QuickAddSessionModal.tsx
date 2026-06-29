@@ -12,7 +12,7 @@ const TODAY = () => {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 };
 
-export default function QuickAddSessionModal({ onClose, cases, db, sendTelegram }: any) {
+export default function QuickAddSessionModal({ onClose, cases, db, sendTelegram, profile }: any) {
     const [form, setForm] = useState({
         case_id:        '',
         session_date:   TODAY(),
@@ -55,7 +55,8 @@ export default function QuickAddSessionModal({ onClose, cases, db, sendTelegram 
 
         // إرسال تيليجرام
         if (sendTelegram && selectedCase) {
-            let msg = `📅 <b>جلسة جديدة</b>\n\n`;
+            let msg = `📅 <b>جلسة جديدة</b>\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━\n`;
             msg += `⚖️ <b>${escapeTelegramHtml(selectedCase.title || '—')}</b>\n`;
             msg += `📋 رقم القيد: ${escapeTelegramHtml(selectedCase.number || '—')}\n`;
             msg += `🏛 المحكمة: ${escapeTelegramHtml(selectedCase.court || '—')}\n`;
@@ -65,6 +66,8 @@ export default function QuickAddSessionModal({ onClose, cases, db, sendTelegram 
             if (form.session_floor || form.session_hall)
                 msg += `📍 ${form.session_floor ? 'الطابق ' + escapeTelegramHtml(form.session_floor) + ' ' : ''}${form.session_hall ? 'قاعة ' + escapeTelegramHtml(form.session_hall) : ''}\n`;
             if (form.description) msg += `📝 ${escapeTelegramHtml(form.description)}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `👤 بواسطة: ${escapeTelegramHtml(profile?.full_name || 'غير معروف')}`;
             sendTelegram(msg);
         }
 
