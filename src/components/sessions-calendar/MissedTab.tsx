@@ -95,7 +95,7 @@ function MissedTab({ cases, clients, onOpenCase, onOpenReminders, onOpenStandalo
                     React.createElement('div', { className: "flex-1 min-w-0" },
                         React.createElement('div', { className: "flex items-center justify-between gap-1" },
                             React.createElement('p', { className: "text-[10.5px] font-black text-white leading-tight flex-1 truncate" },
-                                linkedCase?.title || '— قضية غير محددة —'
+                                linkedCase?.title || s.title || s.description || '— جلسة مستقلة —'
                             ),
                             React.createElement('span', {
                                 className: "text-[6.5px] px-1.5 py-0.5 rounded-full font-black bg-rose-500/15 text-rose-400 shrink-0"
