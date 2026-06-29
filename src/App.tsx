@@ -561,6 +561,7 @@ function App() {
             onClose: () => setShowNewSessionModal(false),
             onSaved: () => { fetchTodaySessions(); fetchUpcomingSessions(); fetchCases(0, casesFilter); },
             onNotify: sendTelegram,
+            profile,
         }),
         showLawyerModal && React.createElement(NewLawyerModal, { onClose: () => setShowLawyerModal(false), onSave: handleSaveLawyer, loading: savingLawyer }),
         showClientModal && React.createElement(NewClientModal, { onClose: () => setShowClientModal(false), onSave: handleSaveClient, loading: savingClient }),
