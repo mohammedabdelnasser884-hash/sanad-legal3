@@ -4,7 +4,7 @@ import { recordError, recordSuccess } from '../systemHealth';
 
 export function useAppData(profile: any) {
     const isAdmin = profile?.role === 'admin';
-    const PAGE_SIZE = 500;
+    const PAGE_SIZE = 15;
 
     // ── State ──────────────────────────────────────────────
     const [cases,        setCases]        = useState<any[]>([]);
